@@ -1,0 +1,54 @@
+nghttp2/lib/nghttp2_option.o: \
+ /opt/esp/esp-idf/components/nghttp/nghttp2/lib/nghttp2_option.c \
+ /opt/esp/esp-idf/components/nghttp/nghttp2/lib/nghttp2_option.h \
+ /opt/esp/esp-idf/components/nghttp/private_include/config.h \
+ /opt/esp/esp-idf/components/nghttp/nghttp2/lib/includes/nghttp2/nghttp2.h \
+ /opt/esp/esp-idf/components/nghttp/port/include/nghttp2/nghttp2ver.h \
+ /opt/esp/esp-idf/components/nghttp/nghttp2/lib/nghttp2_session.h \
+ /opt/esp/esp-idf/components/nghttp/nghttp2/lib/nghttp2_map.h \
+ /opt/esp/esp-idf/components/nghttp/nghttp2/lib/nghttp2_int.h \
+ /opt/esp/esp-idf/components/nghttp/nghttp2/lib/nghttp2_mem.h \
+ /opt/esp/esp-idf/components/nghttp/nghttp2/lib/nghttp2_frame.h \
+ /opt/esp/esp-idf/components/nghttp/nghttp2/lib/nghttp2_hd.h \
+ /opt/esp/esp-idf/components/nghttp/nghttp2/lib/nghttp2_hd_huffman.h \
+ /opt/esp/esp-idf/components/nghttp/nghttp2/lib/nghttp2_buf.h \
+ /opt/esp/esp-idf/components/nghttp/nghttp2/lib/nghttp2_rcbuf.h \
+ /opt/esp/esp-idf/components/nghttp/nghttp2/lib/nghttp2_stream.h \
+ /opt/esp/esp-idf/components/nghttp/nghttp2/lib/nghttp2_outbound_item.h \
+ /opt/esp/esp-idf/components/nghttp/nghttp2/lib/nghttp2_pq.h \
+ /opt/esp/esp-idf/components/nghttp/nghttp2/lib/nghttp2_callbacks.h
+
+/opt/esp/esp-idf/components/nghttp/nghttp2/lib/nghttp2_option.h:
+
+/opt/esp/esp-idf/components/nghttp/private_include/config.h:
+
+/opt/esp/esp-idf/components/nghttp/nghttp2/lib/includes/nghttp2/nghttp2.h:
+
+/opt/esp/esp-idf/components/nghttp/port/include/nghttp2/nghttp2ver.h:
+
+/opt/esp/esp-idf/components/nghttp/nghttp2/lib/nghttp2_session.h:
+
+/opt/esp/esp-idf/components/nghttp/nghttp2/lib/nghttp2_map.h:
+
+/opt/esp/esp-idf/components/nghttp/nghttp2/lib/nghttp2_int.h:
+
+/opt/esp/esp-idf/components/nghttp/nghttp2/lib/nghttp2_mem.h:
+
+/opt/esp/esp-idf/components/nghttp/nghttp2/lib/nghttp2_frame.h:
+
+/opt/esp/esp-idf/components/nghttp/nghttp2/lib/nghttp2_hd.h:
+
+/opt/esp/esp-idf/components/nghttp/nghttp2/lib/nghttp2_hd_huffman.h:
+
+/opt/esp/esp-idf/components/nghttp/nghttp2/lib/nghttp2_buf.h:
+
+/opt/esp/esp-idf/components/nghttp/nghttp2/lib/nghttp2_rcbuf.h:
+
+/opt/esp/esp-idf/components/nghttp/nghttp2/lib/nghttp2_stream.h:
+
+/opt/esp/esp-idf/components/nghttp/nghttp2/lib/nghttp2_outbound_item.h:
+
+/opt/esp/esp-idf/components/nghttp/nghttp2/lib/nghttp2_pq.h:
+
+/opt/esp/esp-idf/components/nghttp/nghttp2/lib/nghttp2_callbacks.h:
+/opt/esp/esp-idf/components/nghttp/nghttp2/lib/nghttp2_option.c:

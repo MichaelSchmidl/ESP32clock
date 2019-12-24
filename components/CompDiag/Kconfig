@@ -1,0 +1,9 @@
+menu "Hemro Wave II Diagnostics"
+
+config USE_COMPDIAGTASK
+    bool "CompDiagTask"
+    default n
+    help
+        This enables the CompDiagTask with TFT feature.
+
+endmenu
