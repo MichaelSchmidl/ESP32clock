@@ -36,15 +36,19 @@
 #include "clockTask.h"
 #include "healthchecks_io.h"
 #include "7segMultiplex.h"
+#ifdef USE_M5_TFT
 #include "diag_task.h"
+#endif
 
 #include "ota_server.h"
 
 /////////////////////////////////////////////////////////////////////////////////////////////////
 void app_main(void)
 {
+#ifdef USE_M5_TFT
     DiagTask_init();
 	DiagTask_connect();
+#endif
 
 	start7SegMultiplex( MULTIPLEX_RATE_US );
     clockTaskStart(1);

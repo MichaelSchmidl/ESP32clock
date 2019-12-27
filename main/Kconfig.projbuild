@@ -1,5 +1,11 @@
 menu "ESP32clock Configuration"
 
+    config USE_M5_TFT
+        bool "use M5 TFT for diagnostics"
+        default n
+        help
+           show diagnostics on M5 TFT
+    
     choice SNTP_TIME_SYNC_METHOD
         prompt "Time synchronization method"
         default SNTP_TIME_SYNC_METHOD_IMMED

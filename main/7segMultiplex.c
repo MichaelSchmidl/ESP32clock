@@ -8,7 +8,9 @@
 
 #include "hardware.h"
 
+#ifdef USE_M5_TFT
 #include "diag_task.h"
+#endif
 
 /*
              A
@@ -73,68 +75,13 @@ static void _setSegments( char c, uint8_t *pDigitSegments )
 
 static void _setSegmentPins( uint8_t bitMask )
 {
-	if ( bitMask & SEG_A_MASK )
-	{
-		gpio_set_level( SEG_A, SEGMENT_ON );
-	}
-	else
-	{
-		gpio_set_level( SEG_A, SEGMENT_OFF );
-	}
-
-	if ( bitMask & SEG_B_MASK )
-	{
-		gpio_set_level( SEG_B, SEGMENT_ON );
-	}
-	else
-	{
-		gpio_set_level( SEG_B, SEGMENT_OFF );
-	}
-
-	if ( bitMask & SEG_C_MASK )
-	{
-		gpio_set_level( SEG_C, SEGMENT_ON );
-	}
-	else
-	{
-		gpio_set_level( SEG_C, SEGMENT_OFF );
-	}
-
-	if ( bitMask & SEG_D_MASK )
-	{
-		gpio_set_level( SEG_D, SEGMENT_ON );
-	}
-	else
-	{
-		gpio_set_level( SEG_D, SEGMENT_OFF );
-	}
-
-	if ( bitMask & SEG_E_MASK )
-	{
-		gpio_set_level( SEG_E, SEGMENT_ON );
-	}
-	else
-	{
-		gpio_set_level( SEG_E, SEGMENT_OFF );
-	}
-
-	if ( bitMask & SEG_F_MASK )
-	{
-		gpio_set_level( SEG_F, SEGMENT_ON );
-	}
-	else
-	{
-		gpio_set_level( SEG_F, SEGMENT_OFF );
-	}
-
-	if ( bitMask & SEG_G_MASK )
-	{
-		gpio_set_level( SEG_G, SEGMENT_ON );
-	}
-	else
-	{
-		gpio_set_level( SEG_G, SEGMENT_OFF );
-	}
+    gpio_set_level( SEG_A, bitMask & SEG_A_MASK ? SEGMENT_ON : SEGMENT_OFF );
+    gpio_set_level( SEG_B, bitMask & SEG_B_MASK ? SEGMENT_ON : SEGMENT_OFF );
+    gpio_set_level( SEG_C, bitMask & SEG_C_MASK ? SEGMENT_ON : SEGMENT_OFF );
+    gpio_set_level( SEG_D, bitMask & SEG_D_MASK ? SEGMENT_ON : SEGMENT_OFF );
+    gpio_set_level( SEG_E, bitMask & SEG_E_MASK ? SEGMENT_ON : SEGMENT_OFF );
+    gpio_set_level( SEG_F, bitMask & SEG_F_MASK ? SEGMENT_ON : SEGMENT_OFF );
+    gpio_set_level( SEG_G, bitMask & SEG_G_MASK ? SEGMENT_ON : SEGMENT_OFF );
 }
 
 
@@ -144,6 +91,15 @@ static void multiplexTimer_callback(void* arg)
     gpio_set_level( DBG_PIN, 1 );
 //    ESP_LOGI(__func__, "multiplexing #%d %02x %02x %02x %02x", multiplexCounter, digit_h10_segments, digit_h1_segments, digit_m10_segments, digit_m1_segments);
 
+
+#if 0
+    digit_h10_segments = SEG_D_MASK;
+    digit_h1_segments = SEG_B_MASK;
+    digit_m10_segments = 0;
+    digit_m1_segments = 0;
+#endif
+
+    _setSegmentPins( 0 ); // all off
 
     gpio_set_level(     DIGIT_M10, DIGIT_INACTIVE );
     gpio_set_level(     DIGIT_M1,  DIGIT_INACTIVE );
@@ -226,8 +182,10 @@ static void _initializeMultiplexPins( void )
 void multiplex_setTime( char *szTime )
 {
     ESP_LOGI(__func__, "[%s]", szTime);
+#ifdef USE_M5_TFT
     tftShowTime( szTime );
-	_setSegments( szTime[0], &digit_h10_segments );
+#endif
+    _setSegments( szTime[0], &digit_h10_segments );
 	_setSegments( szTime[1], &digit_h1_segments );
 	_setSegments( szTime[3], &digit_m10_segments );
 	_setSegments( szTime[4], &digit_m1_segments );

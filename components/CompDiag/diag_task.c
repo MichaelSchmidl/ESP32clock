@@ -244,6 +244,7 @@ static void _createQueue( void )
 
 void tftShowTime( char *szTime)
 {
+	return;
     TFT_Y = DEFAULT_TFT_DISPLAY_HEIGHT / 2;
 	TFT_setFont(DEJAVU24_FONT, NULL);
     _fg = TFT_YELLOW;
@@ -268,11 +269,12 @@ static void _diag_task()
     	TFT_setFont( SMALL_FONT, NULL );
     	_fg = TFT_YELLOW;
     	TFT_print("DeltaClr", 38, BOTTOM );
+#ifdef USE_M5_TFT
     	if ( gpio_get_level( PIN_BTN_A ) == 0 )
     	{
             FreeSpaceBaseline= heap_caps_get_free_size(MALLOC_CAP_8BIT);
     	}
-
+#endif
     	_fg = TFT_WHITE;
     	TFT_print("ESP32clock Info", 0, 0 );
 

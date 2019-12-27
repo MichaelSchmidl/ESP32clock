@@ -15,6 +15,7 @@
 #include "lwip/sockets.h"
 
 #include "7segMultiplex.h"
+#include "push_message.h"
 
 /*socket*/
 static int connect_socket = 0;
@@ -156,7 +157,7 @@ void ota_server_task(void *param)
         {
 	        ESP_LOGI(__func__, "Error: recv data error! errno=%d", errno);
         }
-	    
+
     } while (recv_len > 0 && content_received < content_length);
 
 //	ESP_LOGI(TAG, "OTA Transferred Finished: %d bytes", content_received);
