@@ -43,8 +43,8 @@
 	#define SEG_F                        GPIO_NUM_17
 	#define SEG_G                        GPIO_NUM_26
 
-	#define DIGIT_M10                    GPIO_NUM_22
-	#define DIGIT_M1                     GPIO_NUM_23
+	#define DIGIT_M1                     GPIO_NUM_22
+	#define DIGIT_M10                    GPIO_NUM_23
 	#define DIGIT_H10                    GPIO_NUM_19
 	#define DIGIT_H1                     GPIO_NUM_21
 #endif
