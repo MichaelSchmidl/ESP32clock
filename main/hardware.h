@@ -3,7 +3,7 @@
 
 #include <driver/gpio.h>
 
-#define MULTIPLEX_RATE_US                (1 * 1000)
+#define MULTIPLEX_RATE_US                (873)
 
 #ifdef USE_M5_TFT
 	#define M5_LCD_BL                    GPIO_NUM_32

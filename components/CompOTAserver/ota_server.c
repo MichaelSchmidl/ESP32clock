@@ -126,6 +126,7 @@ void ota_server_task(void *param)
         {
             if (!is_req_body_started) 
             {
+                stop7SegMultiplex();
                 const char *content_length_start = "Content-Length: ";
                 char *content_length_start_p = strstr(ota_buff, content_length_start) + strlen(content_length_start);
                 sscanf(content_length_start_p, "%d", &content_length);
@@ -147,7 +148,6 @@ void ota_server_task(void *param)
 		        if ( last_percent_loaded != percent_loaded )
 		        {
 		        	ESP_LOGI(__func__, "Uploaded %3u%%", percent_loaded);
-		            multiplex_setTime( "Lo:Ad" );
 		        	vTaskDelay(1);
 		        }
 		        last_percent_loaded = percent_loaded;

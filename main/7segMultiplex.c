@@ -12,6 +12,8 @@
 #include "diag_task.h"
 #endif
 
+static esp_timer_handle_t multiplex_timer;
+
 /*
              A
            F   B
@@ -68,12 +70,13 @@ static void _setSegments( char c, uint8_t *pDigitSegments )
 			*pDigitSegments = SEG_A_MASK | SEG_B_MASK | SEG_C_MASK | SEG_D_MASK |     0      | SEG_F_MASK | SEG_G_MASK;
 			break;
 		default:
+			*pDigitSegments =     0      |     0      |     0      | SEG_D_MASK |     0      |     0      |     0     ;
 			break;
 	}
 }
 
 
-static void _setSegmentPins( uint8_t bitMask )
+static void IRAM_ATTR inline _setSegmentPins( uint8_t bitMask )
 {
     gpio_set_level( SEG_A, bitMask & SEG_A_MASK ? SEGMENT_ON : SEGMENT_OFF );
     gpio_set_level( SEG_B, bitMask & SEG_B_MASK ? SEGMENT_ON : SEGMENT_OFF );
@@ -85,56 +88,71 @@ static void _setSegmentPins( uint8_t bitMask )
 }
 
 
-static void multiplexTimer_callback(void* arg)
+static void IRAM_ATTR multiplexTimer_callback(void* arg)
 {
 	static uint8_t multiplexCounter = 0;
     gpio_set_level( DBG_PIN, 1 );
 //    ESP_LOGI(__func__, "multiplexing #%d %02x %02x %02x %02x", multiplexCounter, digit_h10_segments, digit_h1_segments, digit_m10_segments, digit_m1_segments);
 
 
-#if 0
-    digit_h10_segments = SEG_D_MASK;
-    digit_h1_segments = SEG_B_MASK;
-    digit_m10_segments = 0;
-    digit_m1_segments = 0;
-#endif
-
-    _setSegmentPins( 0 ); // all off
-
-    gpio_set_level(     DIGIT_M10, DIGIT_INACTIVE );
-    gpio_set_level(     DIGIT_M1,  DIGIT_INACTIVE );
-    gpio_set_level(     DIGIT_H10, DIGIT_INACTIVE );
-    gpio_set_level(     DIGIT_H1,  DIGIT_INACTIVE );
-
-    _setSegmentPins( 0 ); // all off
-
     switch ( multiplexCounter )
     {
         case 0:
-            gpio_set_level( DIGIT_H10, DIGIT_ACTIVE );
-        	_setSegmentPins( digit_h10_segments );
-        	multiplexCounter++;
-        	break;
+            gpio_set_level(     DIGIT_H10, DIGIT_INACTIVE );
+            gpio_set_level(     DIGIT_H1,  DIGIT_INACTIVE );
+            gpio_set_level(     DIGIT_M10, DIGIT_INACTIVE );
+            gpio_set_level(     DIGIT_M1,  DIGIT_INACTIVE );
+            break;
         case 1:
-            gpio_set_level( DIGIT_H1, DIGIT_ACTIVE );
-        	_setSegmentPins( digit_h1_segments );
-        	multiplexCounter++;
+        	_setSegmentPins( digit_h10_segments );
         	break;
         case 2:
-            gpio_set_level( DIGIT_M10, DIGIT_ACTIVE );
-        	_setSegmentPins( digit_m10_segments );
-        	multiplexCounter++;
+            gpio_set_level( DIGIT_H10, DIGIT_ACTIVE );
         	break;
         case 3:
-            gpio_set_level( DIGIT_M1, DIGIT_ACTIVE );
+            gpio_set_level(     DIGIT_H10, DIGIT_INACTIVE );
+            gpio_set_level(     DIGIT_H1,  DIGIT_INACTIVE );
+            gpio_set_level(     DIGIT_M10, DIGIT_INACTIVE );
+            gpio_set_level(     DIGIT_M1,  DIGIT_INACTIVE );
+            break;
+        case 4:
+        	_setSegmentPins( digit_h1_segments );
+        	break;
+        case 5:
+            gpio_set_level( DIGIT_H1, DIGIT_ACTIVE );
+        	break;
+        case 6:
+            gpio_set_level(     DIGIT_H10, DIGIT_INACTIVE );
+            gpio_set_level(     DIGIT_H1,  DIGIT_INACTIVE );
+            gpio_set_level(     DIGIT_M10, DIGIT_INACTIVE );
+            gpio_set_level(     DIGIT_M1,  DIGIT_INACTIVE );
+            break;
+        case 7:
+        	_setSegmentPins( digit_m10_segments );
+        	break;
+        case 8:
+            gpio_set_level( DIGIT_M10, DIGIT_ACTIVE );
+        	break;
+        case 9:
+            gpio_set_level(     DIGIT_H10, DIGIT_INACTIVE );
+            gpio_set_level(     DIGIT_H1,  DIGIT_INACTIVE );
+            gpio_set_level(     DIGIT_M10, DIGIT_INACTIVE );
+            gpio_set_level(     DIGIT_M1,  DIGIT_INACTIVE );
+            break;
+        case 10:
         	_setSegmentPins( digit_m1_segments );
-        	multiplexCounter = 0;
+        	break;
+        case 11:
+            gpio_set_level( DIGIT_M1, DIGIT_ACTIVE );
         	break;
         default:
         	multiplexCounter = 0;
         	break;
     }
-    gpio_set_level( DBG_PIN, 0 );
+	multiplexCounter++;
+	if ( multiplexCounter >= 12 ) multiplexCounter = 0;
+
+	gpio_set_level( DBG_PIN, 0 );
 }
 
 
@@ -192,6 +210,16 @@ void multiplex_setTime( char *szTime )
 }
 
 
+void stop7SegMultiplex( void )
+{
+	ESP_ERROR_CHECK(esp_timer_stop( multiplex_timer ));
+    gpio_set_level(     DIGIT_H10, DIGIT_INACTIVE );
+    gpio_set_level(     DIGIT_H1,  DIGIT_INACTIVE );
+    gpio_set_level(     DIGIT_M10, DIGIT_INACTIVE );
+    gpio_set_level(     DIGIT_M1,  DIGIT_INACTIVE );
+}
+
+
 void start7SegMultiplex( uint64_t period_us )
 {
 	_initializeMultiplexPins();
@@ -202,7 +230,6 @@ void start7SegMultiplex( uint64_t period_us )
             .name = "multiplex"
     };
 
-    esp_timer_handle_t multiplex_timer;
     ESP_ERROR_CHECK(esp_timer_create(&multiplex_timer_args, &multiplex_timer));
     /* The timer has been created but is not running yet */
 

@@ -51,7 +51,20 @@ void app_main(void)
 #endif
 
 	start7SegMultiplex( MULTIPLEX_RATE_US );
-    clockTaskStart(1);
+#if 0
+	uint8_t h = 0;
+	uint8_t m = 0;
+	while ( 1 )
+	{
+		char szTmp[10];
+        snprintf( szTmp, sizeof(szTmp), "%02d:%02d", h++, m++);
+        if (h > 23 ) h = 0;
+        if (m > 59 ) m = 0;
+        multiplex_setTime( szTmp );
+	   vTaskDelay(pdMS_TO_TICKS(200));
+	}
+#endif
+	clockTaskStart(1);
     notificationTaskStart(4);
     healthchecksTaskStart(4);
 
