@@ -78,7 +78,7 @@ static void clockTask_workerFunction(void *p)
     TickType_t xLastWakeTime = xTaskGetTickCount();
 
     do {
-        multiplex_setTime( "no:AP" );
+        multiplex_setTime( "no AP" );
         vTaskDelay( pdMS_TO_TICKS( 1000UL ) );
     } while ( ! _doWeHaveAnIPAddr() );
 

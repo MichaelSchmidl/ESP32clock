@@ -12,6 +12,50 @@
 #include "diag_task.h"
 #endif
 
+#define USE_LEDC_DIMMING
+
+#include "driver/ledc.h"
+uint8_t currentBrightness = 128;
+#define LEDC_CH_NUM            (4)
+#define LEDC_HS_TIMER          LEDC_TIMER_1
+#define LEDC_HS_MODE           LEDC_HIGH_SPEED_MODE
+typedef struct {
+    int channel;
+    int io;
+    int mode;
+    int timer_idx;
+} ledc_info_t;
+#define LEDC_H10 0
+#define LEDC_H1  1
+#define LEDC_M10 2
+#define LEDC_M1  3
+ledc_info_t ledc_ch[LEDC_CH_NUM] = {
+	{
+		.channel   = LEDC_CHANNEL_0,
+		.io        = DIGIT_H10,
+		.mode      = LEDC_HS_MODE,
+		.timer_idx = LEDC_HS_TIMER
+	},
+	{
+		.channel   = LEDC_CHANNEL_1,
+		.io        = DIGIT_H1,
+		.mode      = LEDC_HS_MODE,
+		.timer_idx = LEDC_HS_TIMER
+	},
+	{
+		.channel   = LEDC_CHANNEL_2,
+		.io        = DIGIT_M10,
+		.mode      = LEDC_HS_MODE,
+		.timer_idx = LEDC_HS_TIMER
+	},
+	{
+		.channel   = LEDC_CHANNEL_3,
+		.io        = DIGIT_M1,
+		.mode      = LEDC_HS_MODE,
+		.timer_idx = LEDC_HS_TIMER
+	}
+};
+
 static esp_timer_handle_t multiplex_timer;
 
 /*
@@ -29,16 +73,28 @@ static esp_timer_handle_t multiplex_timer;
 #define SEG_F_MASK 0x20
 #define SEG_G_MASK 0x40
 
-static uint8_t digit_m10_segments = SEG_G_MASK;
-static uint8_t digit_m1_segments = SEG_G_MASK;
-static uint8_t digit_h10_segments = SEG_G_MASK;
-static uint8_t digit_h1_segments = SEG_G_MASK;
+static uint8_t digit_m10_segments = SEG_A_MASK | SEG_B_MASK | SEG_C_MASK | SEG_D_MASK | SEG_E_MASK | SEG_F_MASK | SEG_G_MASK;
+static uint8_t digit_m1_segments =  SEG_A_MASK | SEG_B_MASK | SEG_C_MASK | SEG_D_MASK | SEG_E_MASK | SEG_F_MASK | SEG_G_MASK;
+static uint8_t digit_h10_segments = SEG_A_MASK | SEG_B_MASK | SEG_C_MASK | SEG_D_MASK | SEG_E_MASK | SEG_F_MASK | SEG_G_MASK;
+static uint8_t digit_h1_segments =  SEG_A_MASK | SEG_B_MASK | SEG_C_MASK | SEG_D_MASK | SEG_E_MASK | SEG_F_MASK | SEG_G_MASK;
 
 
 static void _setSegments( char c, uint8_t *pDigitSegments )
 {
 	switch ( c )
 	{
+		case 'n':
+			*pDigitSegments =     0      |     0      | SEG_C_MASK |     0      | SEG_E_MASK |     0      | SEG_G_MASK;
+			break;
+		case 'o':
+			*pDigitSegments =     0      |     0      | SEG_C_MASK | SEG_D_MASK | SEG_E_MASK |     0      | SEG_G_MASK;
+			break;
+		case 'A':
+			*pDigitSegments = SEG_A_MASK | SEG_B_MASK | SEG_C_MASK |     0      | SEG_E_MASK | SEG_F_MASK | SEG_G_MASK;
+			break;
+		case 'P':
+			*pDigitSegments = SEG_A_MASK | SEG_B_MASK |     0      |     0      | SEG_E_MASK | SEG_F_MASK | SEG_G_MASK;
+			break;
 		case '0':
 			*pDigitSegments = SEG_A_MASK | SEG_B_MASK | SEG_C_MASK | SEG_D_MASK | SEG_E_MASK | SEG_F_MASK |     0     ;
 			break;
@@ -76,6 +132,22 @@ static void _setSegments( char c, uint8_t *pDigitSegments )
 }
 
 
+static void IRAM_ATTR inline _stopDrivingLeds( void )
+{
+#ifdef USE_LEDC_DIMMING
+    for (int ch = 0; ch < LEDC_CH_NUM; ch++)
+    {
+        ledc_set_duty(ledc_ch[ch].mode, ledc_ch[ch].channel, 0);
+        ledc_update_duty(ledc_ch[ch].mode, ledc_ch[ch].channel);
+    }
+#else
+	gpio_set_level(     DIGIT_H10, DIGIT_INACTIVE );
+    gpio_set_level(     DIGIT_H1,  DIGIT_INACTIVE );
+    gpio_set_level(     DIGIT_M10, DIGIT_INACTIVE );
+    gpio_set_level(     DIGIT_M1,  DIGIT_INACTIVE );
+#endif
+}
+
 static void IRAM_ATTR inline _setSegmentPins( uint8_t bitMask )
 {
     gpio_set_level( SEG_A, bitMask & SEG_A_MASK ? SEGMENT_ON : SEGMENT_OFF );
@@ -98,52 +170,60 @@ static void IRAM_ATTR multiplexTimer_callback(void* arg)
     switch ( multiplexCounter )
     {
         case 0:
-            gpio_set_level(     DIGIT_H10, DIGIT_INACTIVE );
-            gpio_set_level(     DIGIT_H1,  DIGIT_INACTIVE );
-            gpio_set_level(     DIGIT_M10, DIGIT_INACTIVE );
-            gpio_set_level(     DIGIT_M1,  DIGIT_INACTIVE );
+        	_stopDrivingLeds();
             break;
         case 1:
         	_setSegmentPins( digit_h10_segments );
         	break;
         case 2:
+#ifdef USE_LEDC_DIMMING
+            ledc_set_duty(ledc_ch[LEDC_H10].mode, ledc_ch[LEDC_H10].channel, currentBrightness);
+            ledc_update_duty(ledc_ch[LEDC_H10].mode, ledc_ch[LEDC_H10].channel);
+#else
             gpio_set_level( DIGIT_H10, DIGIT_ACTIVE );
+#endif
         	break;
         case 3:
-            gpio_set_level(     DIGIT_H10, DIGIT_INACTIVE );
-            gpio_set_level(     DIGIT_H1,  DIGIT_INACTIVE );
-            gpio_set_level(     DIGIT_M10, DIGIT_INACTIVE );
-            gpio_set_level(     DIGIT_M1,  DIGIT_INACTIVE );
+        	_stopDrivingLeds();
             break;
         case 4:
         	_setSegmentPins( digit_h1_segments );
         	break;
         case 5:
+#ifdef USE_LEDC_DIMMING
+            ledc_set_duty(ledc_ch[LEDC_H1].mode, ledc_ch[LEDC_H1].channel, currentBrightness);
+            ledc_update_duty(ledc_ch[LEDC_H1].mode, ledc_ch[LEDC_H1].channel);
+#else
             gpio_set_level( DIGIT_H1, DIGIT_ACTIVE );
+#endif
         	break;
         case 6:
-            gpio_set_level(     DIGIT_H10, DIGIT_INACTIVE );
-            gpio_set_level(     DIGIT_H1,  DIGIT_INACTIVE );
-            gpio_set_level(     DIGIT_M10, DIGIT_INACTIVE );
-            gpio_set_level(     DIGIT_M1,  DIGIT_INACTIVE );
+        	_stopDrivingLeds();
             break;
         case 7:
         	_setSegmentPins( digit_m10_segments );
         	break;
         case 8:
+#ifdef USE_LEDC_DIMMING
+            ledc_set_duty(ledc_ch[LEDC_M10].mode, ledc_ch[LEDC_M10].channel, currentBrightness);
+            ledc_update_duty(ledc_ch[LEDC_M10].mode, ledc_ch[LEDC_M10].channel);
+#else
             gpio_set_level( DIGIT_M10, DIGIT_ACTIVE );
+#endif
         	break;
         case 9:
-            gpio_set_level(     DIGIT_H10, DIGIT_INACTIVE );
-            gpio_set_level(     DIGIT_H1,  DIGIT_INACTIVE );
-            gpio_set_level(     DIGIT_M10, DIGIT_INACTIVE );
-            gpio_set_level(     DIGIT_M1,  DIGIT_INACTIVE );
+        	_stopDrivingLeds();
             break;
         case 10:
         	_setSegmentPins( digit_m1_segments );
         	break;
         case 11:
+#ifdef USE_LEDC_DIMMING
+            ledc_set_duty(ledc_ch[LEDC_M1].mode, ledc_ch[LEDC_M1].channel, currentBrightness);
+            ledc_update_duty(ledc_ch[LEDC_M1].mode, ledc_ch[LEDC_M1].channel);
+#else
             gpio_set_level( DIGIT_M1, DIGIT_ACTIVE );
+#endif
         	break;
         default:
         	multiplexCounter = 0;
@@ -161,7 +241,43 @@ static void _initializeMultiplexPins( void )
     gpio_set_direction( DBG_PIN, GPIO_MODE_OUTPUT );
     gpio_set_level(     DBG_PIN, 0 );
 
+#ifdef USE_LEDC_DIMMING
+#warning LEDC_DIMMING is active
+    ledc_timer_config_t ledc_timer = {
+        .duty_resolution = LEDC_TIMER_8_BIT, //set timer counter bit number
+        .freq_hz = 200000L,          //set frequency of pwm
+        .speed_mode = LEDC_HS_MODE,  //timer mode,
+        .timer_num = LEDC_HS_TIMER   //timer index
+    };
+    //configure timer0 for high speed channels
+    if ( ESP_OK != ledc_timer_config(&ledc_timer))
+    {
+        ESP_LOGE(__func__, "ledc_timer_config failed");
+    }
 
+    for (int ch = 0; ch < LEDC_CH_NUM; ch++) {
+        ledc_channel_config_t ledc_channel = {
+            //set LEDC channel 0
+            .channel = ledc_ch[ch].channel,
+            //set the duty for initialization.(duty range is 0 ~ ((2**bit_num)-1)
+            .duty = 0, // 0% by default
+            //GPIO number
+            .gpio_num = ledc_ch[ch].io,
+            //GPIO INTR TYPE, as an example, we enable fade_end interrupt here.
+            .intr_type = LEDC_INTR_DISABLE,
+            //set LEDC mode, from ledc_mode_t
+            .speed_mode = ledc_ch[ch].mode,
+            //set LEDC timer source, if different channel use one timer,
+            //the frequency and bit_num of these channels should be the same
+            .timer_sel = ledc_ch[ch].timer_idx,
+        };
+        //set the configuration
+        if (ESP_OK != ledc_channel_config(&ledc_channel))
+        {
+            ESP_LOGE(__func__, "ledc_channel_config failed");
+        }
+    }
+#else
 	gpio_set_direction( DIGIT_M10, GPIO_MODE_OUTPUT );
     gpio_set_level(     DIGIT_M10, DIGIT_INACTIVE );
 
@@ -173,7 +289,7 @@ static void _initializeMultiplexPins( void )
 
     gpio_set_direction( DIGIT_H1, GPIO_MODE_OUTPUT );
     gpio_set_level(     DIGIT_H1, DIGIT_INACTIVE );
-
+#endif
     gpio_set_direction( SEG_A, GPIO_MODE_OUTPUT );
     gpio_set_level(     SEG_A, SEGMENT_OFF );
 
@@ -194,6 +310,7 @@ static void _initializeMultiplexPins( void )
 
     gpio_set_direction( SEG_G, GPIO_MODE_OUTPUT );
     gpio_set_level(     SEG_G, SEGMENT_OFF );
+
 }
 
 
@@ -213,10 +330,7 @@ void multiplex_setTime( char *szTime )
 void stop7SegMultiplex( void )
 {
 	ESP_ERROR_CHECK(esp_timer_stop( multiplex_timer ));
-    gpio_set_level(     DIGIT_H10, DIGIT_INACTIVE );
-    gpio_set_level(     DIGIT_H1,  DIGIT_INACTIVE );
-    gpio_set_level(     DIGIT_M10, DIGIT_INACTIVE );
-    gpio_set_level(     DIGIT_M1,  DIGIT_INACTIVE );
+	_stopDrivingLeds();
 }
 
 
