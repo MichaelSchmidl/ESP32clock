@@ -6,6 +6,11 @@
 #include "esp_timer.h"
 #include <driver/gpio.h>
 
+#include "driver/timer.h"
+#define TIMER_DIVIDER         16  //  Hardware timer clock divider
+#define TIMER_SCALE           (TIMER_BASE_CLK / TIMER_DIVIDER)  // convert counter value to seconds
+#define TIMER_INTERVAL_SEC    (1.2)
+
 #include "hardware.h"
 
 #ifdef USE_M5_TFT
@@ -344,10 +349,66 @@ void stop7SegMultiplex( void )
 }
 
 
+/*
+ * Timer group0 ISR handler
+ *
+ * Note:
+ * We don't call the timer API here because they are not declared with IRAM_ATTR.
+ * If we're okay with the timer irq not being serviced while SPI flash cache is disabled,
+ * we can allocate this interrupt without the ESP_INTR_FLAG_IRAM flag and use the normal API.
+ */
+void IRAM_ATTR timer_group0_isr(void *para)
+{
+    int timer_idx = (int) para;
+
+    /* Retrieve the interrupt status and the counter value
+       from the timer that reported the interrupt */
+    timer_intr_t timer_intr = timer_group_intr_get_in_isr(TIMER_GROUP_0);
+    uint64_t timer_counter_value = timer_group_get_counter_value_in_isr(TIMER_GROUP_0, timer_idx);
+
+
+    /* Clear the interrupt
+       and update the alarm time for the timer with without reload */
+    if (timer_intr & TIMER_INTR_T0) {
+        timer_group_intr_clr_in_isr(TIMER_GROUP_0, TIMER_0);
+        timer_counter_value += (uint64_t) (TIMER_INTERVAL_SEC * TIMER_SCALE);
+        timer_group_set_alarm_value_in_isr(TIMER_GROUP_0, timer_idx, timer_counter_value);
+    }
+
+    /* After the alarm has been triggered
+      we need enable it again, so it is triggered the next time */
+    timer_group_enable_alarm_in_isr(TIMER_GROUP_0, timer_idx);
+}
+
+
 void start7SegMultiplex( uint64_t period_us )
 {
 	_initializeMultiplexPins();
 
+#if 0
+	///////////////////////////////////////////////////////////////////////////
+    /* Select and initialize basic parameters of the timer */
+    timer_config_t config;
+    config.divider = TIMER_DIVIDER;
+    config.counter_dir = TIMER_COUNT_UP;
+    config.counter_en = TIMER_PAUSE;
+    config.alarm_en = TIMER_ALARM_EN;
+    config.intr_type = TIMER_INTR_LEVEL;
+    config.auto_reload = 1;
+    timer_init(TIMER_GROUP_0, TIMER_0, &config);
+
+    /* Timer's counter will initially start from value below.
+       Also, if auto_reload is set, this value will be automatically reload on alarm */
+    timer_set_counter_value(TIMER_GROUP_0, TIMER_0, 0x00000000ULL);
+
+    /* Configure the alarm value and the interrupt on alarm. */
+    timer_set_alarm_value(TIMER_GROUP_0, TIMER_0, TIMER_INTERVAL_SEC * TIMER_SCALE);
+    timer_enable_intr(TIMER_GROUP_0, TIMER_0);
+    timer_isr_register(TIMER_GROUP_0, TIMER_0, timer_group0_isr, (void *) TIMER_0, ESP_INTR_FLAG_IRAM, NULL);
+    timer_start(TIMER_GROUP_0, TIMER_0);
+#endif
+
+    ///////////////////////////////////////////////////////////////////////////
 	const esp_timer_create_args_t multiplex_timer_args = {
             .callback = &multiplexTimer_callback,
             /* name is optional, but may help identify the timer when debugging */
