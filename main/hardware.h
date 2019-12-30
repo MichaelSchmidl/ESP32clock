@@ -3,7 +3,8 @@
 
 #include <driver/gpio.h>
 
-#define MULTIPLEX_RATE_US                (873)
+#define LEDC_PWM_FREQ                    (200UL * 1000UL)
+#define MULTIPLEX_RATE_US                (1000)
 
 #ifdef USE_M5_TFT
 	#define M5_LCD_BL                    GPIO_NUM_32
@@ -32,6 +33,8 @@
 	#define DIGIT_M1                     GPIO_NUM_21
 	#define DIGIT_H10                    GPIO_NUM_22
 	#define DIGIT_H1                     GPIO_NUM_0
+
+    #define RED_DOTS                     GPIO_NUM_15
 #else
 	#define DBG_PIN                      GPIO_NUM_2
 
@@ -47,6 +50,8 @@
 	#define DIGIT_M10                    GPIO_NUM_23
 	#define DIGIT_H10                    GPIO_NUM_19
 	#define DIGIT_H1                     GPIO_NUM_21
+
+    #define RED_DOTS                     GPIO_NUM_15
 #endif
 
 #define DIGIT_INACTIVE               0

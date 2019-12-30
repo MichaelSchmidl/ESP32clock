@@ -16,7 +16,7 @@
 
 #include "driver/ledc.h"
 uint8_t currentBrightness = 128;
-#define LEDC_CH_NUM            (4)
+#define LEDC_CH_NUM            (5)
 #define LEDC_HS_TIMER          LEDC_TIMER_1
 #define LEDC_HS_MODE           LEDC_HIGH_SPEED_MODE
 typedef struct {
@@ -25,10 +25,11 @@ typedef struct {
     int mode;
     int timer_idx;
 } ledc_info_t;
-#define LEDC_H10 0
-#define LEDC_H1  1
-#define LEDC_M10 2
-#define LEDC_M1  3
+#define LEDC_H10  0
+#define LEDC_H1   1
+#define LEDC_M10  2
+#define LEDC_M1   3
+#define LEDC_DOTS 4
 ledc_info_t ledc_ch[LEDC_CH_NUM] = {
 	{
 		.channel   = LEDC_CHANNEL_0,
@@ -51,6 +52,12 @@ ledc_info_t ledc_ch[LEDC_CH_NUM] = {
 	{
 		.channel   = LEDC_CHANNEL_3,
 		.io        = DIGIT_M1,
+		.mode      = LEDC_HS_MODE,
+		.timer_idx = LEDC_HS_TIMER
+	},
+	{
+		.channel   = LEDC_CHANNEL_4,
+		.io        = RED_DOTS,
 		.mode      = LEDC_HS_MODE,
 		.timer_idx = LEDC_HS_TIMER
 	}
@@ -135,7 +142,7 @@ static void _setSegments( char c, uint8_t *pDigitSegments )
 static void IRAM_ATTR inline _stopDrivingLeds( void )
 {
 #ifdef USE_LEDC_DIMMING
-    for (int ch = 0; ch < LEDC_CH_NUM; ch++)
+    for (int ch = 0; ch < LEDC_DOTS; ch++)
     {
         ledc_set_duty(ledc_ch[ch].mode, ledc_ch[ch].channel, 0);
         ledc_update_duty(ledc_ch[ch].mode, ledc_ch[ch].channel);
@@ -165,7 +172,6 @@ static void IRAM_ATTR multiplexTimer_callback(void* arg)
 	static uint8_t multiplexCounter = 0;
     gpio_set_level( DBG_PIN, 1 );
 //    ESP_LOGI(__func__, "multiplexing #%d %02x %02x %02x %02x", multiplexCounter, digit_h10_segments, digit_h1_segments, digit_m10_segments, digit_m1_segments);
-
 
     switch ( multiplexCounter )
     {
@@ -245,9 +251,9 @@ static void _initializeMultiplexPins( void )
 #warning LEDC_DIMMING is active
     ledc_timer_config_t ledc_timer = {
         .duty_resolution = LEDC_TIMER_8_BIT, //set timer counter bit number
-        .freq_hz = 200000L,          //set frequency of pwm
-        .speed_mode = LEDC_HS_MODE,  //timer mode,
-        .timer_num = LEDC_HS_TIMER   //timer index
+        .freq_hz = LEDC_PWM_FREQ,            //set frequency of pwm
+        .speed_mode = LEDC_HS_MODE,          //timer mode,
+        .timer_num = LEDC_HS_TIMER           //timer index
     };
     //configure timer0 for high speed channels
     if ( ESP_OK != ledc_timer_config(&ledc_timer))
@@ -277,6 +283,10 @@ static void _initializeMultiplexPins( void )
             ESP_LOGE(__func__, "ledc_channel_config failed");
         }
     }
+
+    // set dots on
+    ledc_set_duty(ledc_ch[LEDC_DOTS].mode, ledc_ch[LEDC_DOTS].channel, 255);
+    ledc_update_duty(ledc_ch[LEDC_DOTS].mode, ledc_ch[LEDC_DOTS].channel);
 #else
 	gpio_set_direction( DIGIT_M10, GPIO_MODE_OUTPUT );
     gpio_set_level(     DIGIT_M10, DIGIT_INACTIVE );

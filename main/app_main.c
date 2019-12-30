@@ -51,10 +51,10 @@ void app_main(void)
 #endif
 
 	start7SegMultiplex( MULTIPLEX_RATE_US );
-	clockTaskStart(1);
-    notificationTaskStart(4);
-    healthchecksTaskStart(4);
+	clockTaskStart(tskIDLE_PRIORITY+2);
+    notificationTaskStart(tskIDLE_PRIORITY+1);
+    healthchecksTaskStart(tskIDLE_PRIORITY+1);
 
-	xTaskCreate(&ota_server_task, "ota_server_task", 4096, NULL, 15, NULL);
+	xTaskCreate(&ota_server_task, "ota_server_task", 4096, NULL, tskIDLE_PRIORITY+3, NULL);
 
 }
