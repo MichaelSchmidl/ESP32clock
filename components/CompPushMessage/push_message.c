@@ -279,6 +279,14 @@ static void notification_task(void *pvParameters)
         	   snprintf( msg_titletext, sizeof(msg_titletext),
         			     "ESP32clock started");
         	   break;
+           case 'D':
+        	   snprintf( msg_titletext, sizeof(msg_titletext),
+        			     "ESP32clock dimmed");
+        	   break;
+           case 'd':
+        	   snprintf( msg_titletext, sizeof(msg_titletext),
+        			     "ESP32clock fullbright");
+        	   break;
            default:
         	   snprintf( msg_titletext, sizeof(msg_titletext),
         			     "ESP32clock <%c>", recv);
