@@ -67,6 +67,7 @@ static const char REQUEST_HEADER[] = "POST " WEB_URL " HTTP/1.0\r\n"
 
 static const char CONTENT_HEADER[] = "token=" PUSH_TOKEN "&"
 "user=" PUSH_USER "&"
+"title=%s&"
 "message=%s";
 
 
@@ -240,44 +241,64 @@ static void notification_task(void *pvParameters)
         time_t up_time = (now -start_time);
         if (0 == up_time)
         {
-            sprintf( msg_infotext,
-            		 "Firmware %s %s started @ %s [%c]",
+            snprintf(msg_infotext, sizeof(msg_infotext),
+            		 "Firmware %s %s started @ %s",
 					 __DATE__,
 					 __TIME__,
-					 strftime_buf,
-					 recv);
+					 strftime_buf);
         }
         else if (SECS_PER_DAY < up_time)
         {
-            sprintf(msg_infotext,
-                    "%s (%s)[%s] <%c>, %d free, up %d days",
+            snprintf(msg_infotext, sizeof(msg_infotext),
+                    "%s (%s)[%s], %d free, up %d days",
                     szHostname,
 					ip_add,
 					strftime_buf,
-					recv,
 					heap_caps_get_free_size(MALLOC_CAP_8BIT),
                     (int)(up_time / SECS_PER_DAY));
         }
         else{
-            sprintf(msg_infotext,
-                    "%s (%s) [%s] <%c>, %d free, up %d:%02d:%02d",
+            snprintf(msg_infotext, sizeof(msg_infotext),
+                    "%s (%s) [%s], %d free, up %d:%02d:%02d",
                     szHostname,
 					ip_add,
 					strftime_buf,
-					recv,
 					heap_caps_get_free_size(MALLOC_CAP_8BIT),
                     (int)(up_time / (60*60)),
                     (int)((up_time % (60*60)) / 60),
                     (int)(up_time % 60));
         }
+        char msg_titletext[50];
+        switch( recv )
+        {
+           case 'A':
+        	   snprintf( msg_titletext, sizeof(msg_titletext),
+        			     "ESP32clock alive");
+        	   break;
+           case 'S':
+        	   snprintf( msg_titletext, sizeof(msg_titletext),
+        			     "ESP32clock started");
+        	   break;
+           default:
+        	   snprintf( msg_titletext, sizeof(msg_titletext),
+        			     "ESP32clock <%c>", recv);
+        	   break;
+        }
+
         ESP_LOGI(__func__, "replace blanks with plus sign...");
         char *p = NULL;
         while (NULL != (p = strchr(msg_infotext, ' ')))
         {
             *p = '+';
         }
+        p = NULL;
+        while (NULL != (p = strchr(msg_titletext, ' ')))
+        {
+            *p = '+';
+        }
+
         char msg_content[1024];
-        sprintf(msg_content, CONTENT_HEADER, msg_infotext);
+        sprintf(msg_content, CONTENT_HEADER, msg_titletext, msg_infotext);
         char msg_payload[2048];
         sprintf(msg_payload, REQUEST_HEADER, strlen(msg_content), msg_content);
         ESP_LOGI(__func__, "Writing HTTP request %s...", msg_payload);
