@@ -19,6 +19,8 @@
 #include "7segMultiplex.h"
 #include "esp_sntp.h"
 
+#include "daylightCalc.h"
+
 
 static void initialize_sntp(void);
 
@@ -64,7 +66,9 @@ static uint8_t _doWeHaveAnIPAddr( void )
 /////////////////////////////////////////////////////////////////////////////////////////////////
 static void clockTask_workerFunction(void *p)
 {
-    ESP_ERROR_CHECK( nvs_flash_init() );
+	static int currentDisplayDimming = 0;
+
+	ESP_ERROR_CHECK( nvs_flash_init() );
     tcpip_adapter_init();
     ESP_ERROR_CHECK( esp_event_loop_create_default() );
 
@@ -97,6 +101,22 @@ static void clockTask_workerFunction(void *p)
 
         if ( ( timeinfo.tm_sec == 0 ) || (firstTime ) )
         {
+        	if ( timeinfo.tm_year >= 2019 )
+        	{
+                int dimDisplayNow = isSunDown(48.1374300, 11.5754900, timeinfo);
+                if ( currentDisplayDimming != dimDisplayNow )
+                {
+                	if ( dimDisplayNow )
+                	{
+                        notificationTask_sendMessage('D');
+                	}
+                	else
+                	{
+                        notificationTask_sendMessage('d');
+                	}
+                }
+                currentDisplayDimming = dimDisplayNow;
+        	}
 #if 0
         	strftime(strftime_buf, sizeof(strftime_buf), "%c", &timeinfo);
             ESP_LOGI(__func__, "it is %s", strftime_buf);
