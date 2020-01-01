@@ -96,7 +96,7 @@ int isSunDown( double latit, double longit, struct tm timeinfo )
 	double twam,altmax,noont,settm,riset,twpm;
 	time_t sekunnit;
 
-	y = timeinfo.tm_year;
+	y = timeinfo.tm_year + 1900;
 	m = timeinfo.tm_mon;
 	day = timeinfo.tm_mday;
 	tzone = timeinfo.tm_isdst ? 2.0 : 1.0;
@@ -174,6 +174,14 @@ int isSunDown( double latit, double longit, struct tm timeinfo )
 	printf("Civil twilight: ");
 	showhrmn(twpm);  puts("\n");
 #endif
-	return 0;
+	double now = (double)timeinfo.tm_hour + ((double)timeinfo.tm_min / 60.0);
+	if (( now < riset ) || ( now > settm ))
+	{
+		return 1;
+	}
+	else
+	{
+		return 0;
+	}
 }
 

@@ -66,7 +66,7 @@ static uint8_t _doWeHaveAnIPAddr( void )
 /////////////////////////////////////////////////////////////////////////////////////////////////
 static void clockTask_workerFunction(void *p)
 {
-	static int currentDisplayDimming = 0;
+	static int currentDisplayDimming = -1;
 
 	ESP_ERROR_CHECK( nvs_flash_init() );
     tcpip_adapter_init();
@@ -101,7 +101,7 @@ static void clockTask_workerFunction(void *p)
 
         if ( ( timeinfo.tm_sec == 0 ) || (firstTime ) )
         {
-        	if ( timeinfo.tm_year >= 2019 )
+        	if ( timeinfo.tm_year > (2019 - 1900) )
         	{
                 int dimDisplayNow = isSunDown(48.1374300, 11.5754900, timeinfo);
                 if ( currentDisplayDimming != dimDisplayNow )
@@ -116,40 +116,40 @@ static void clockTask_workerFunction(void *p)
                 	}
                 }
                 currentDisplayDimming = dimDisplayNow;
-        	}
 #if 0
-        	strftime(strftime_buf, sizeof(strftime_buf), "%c", &timeinfo);
-            ESP_LOGI(__func__, "it is %s", strftime_buf);
+                strftime(strftime_buf, sizeof(strftime_buf), "%c", &timeinfo);
+                ESP_LOGI(__func__, "it is %s", strftime_buf);
 #endif
 
-            // show it on 7-seg display
-            strftime(strftime_buf, sizeof(strftime_buf), "%X", &timeinfo);
-            strftime_buf[5] = '\0';
-            if ( ! _doWeHaveAnIPAddr() )
-            {
-            	snprintf( strftime_buf, sizeof(strftime_buf), "no:AP" );
-            }
-            multiplex_setTime( strftime_buf );
+				// show it on 7-seg display
+				strftime(strftime_buf, sizeof(strftime_buf), "%X", &timeinfo);
+				strftime_buf[5] = '\0';
+				if ( ! _doWeHaveAnIPAddr() )
+				{
+					snprintf( strftime_buf, sizeof(strftime_buf), "no:AP" );
+				}
+				multiplex_setTime( strftime_buf );
 
-            // send ALIVE every day at 6:27
-            if ( ( 6 == timeinfo.tm_hour ) && ( 27 == timeinfo.tm_min ) )
-            {
-                notificationTask_sendMessage('A');
-            }
+				// send ALIVE every day at 6:27
+				if ( ( 6 == timeinfo.tm_hour ) && ( 27 == timeinfo.tm_min ) )
+				{
+					notificationTask_sendMessage('A');
+				}
 
 
-            if ( firstTime )
-            {
-            	// wait a second so we catch the next minute for sure
-                vTaskDelay(pdMS_TO_TICKS( 1000UL ));
-            }
-            else
-            {
-                // wait nearly a minute...
-                vTaskDelayUntil( &xLastWakeTime, pdMS_TO_TICKS( 59UL * 1000UL ) );
-            }
+				if ( firstTime )
+				{
+					// wait a second so we catch the next minute for sure
+					vTaskDelay(pdMS_TO_TICKS( 1000UL ));
+				}
+				else
+				{
+					// wait nearly a minute...
+					vTaskDelayUntil( &xLastWakeTime, pdMS_TO_TICKS( 59UL * 1000UL ) );
+				}
 
-        	firstTime = 0;
+				firstTime = 0;
+        	}
         }
         else
         {
