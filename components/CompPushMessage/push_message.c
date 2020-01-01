@@ -353,7 +353,7 @@ static void notification_task(void *pvParameters)
             ESP_LOGI(__func__, "%d bytes read", len);
             /* Print response directly to stdout as it is read */
             for(int i = 0; i < len; i++) {
-                putchar(buf[i]);
+//                putchar(buf[i]);
             }
         } while(1);
         
