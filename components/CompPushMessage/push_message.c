@@ -217,12 +217,13 @@ static void notification_task(void *pvParameters)
         struct tm timeinfo;
         char strftime_buf[80];
         time(&now);
-        if (0 == start_time) start_time = now;
         setenv("TZ", "CET-1CEST,M3.5.0/2,M10.5.0/3", 1);
         tzset();
         localtime_r(&now, &timeinfo);
         strftime(strftime_buf, sizeof(strftime_buf), "%X", &timeinfo);
         strftime_buf[5] = '\0';
+
+        if ((timeinfo.tm_year > (2019 - 1900)) && (0 == start_time)) start_time = now;
 
         tcpip_adapter_ip_info_t ipInfo;
         char ip_add[20];
