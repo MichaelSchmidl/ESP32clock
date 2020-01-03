@@ -97,7 +97,7 @@ int isSunDown( double latit, double longit, struct tm timeinfo )
 	time_t sekunnit;
 
 	y = timeinfo.tm_year + 1900;
-	m = timeinfo.tm_mon;
+	m = timeinfo.tm_mon + 1;
 	day = timeinfo.tm_mday;
 	tzone = timeinfo.tm_isdst ? 2.0 : 1.0;
 
