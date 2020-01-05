@@ -9,7 +9,7 @@
 #include "driver/timer.h"
 #define TIMER_DIVIDER         16  //  Hardware timer clock divider
 #define TIMER_SCALE           (TIMER_BASE_CLK / TIMER_DIVIDER)  // convert counter value to seconds
-#define TIMER_INTERVAL_SEC    (1.2)
+#define TIMER_INTERVAL_SEC    (0.01)
 
 #include "hardware.h"
 
@@ -375,15 +375,30 @@ void IRAM_ATTR timer_group0_isr(void *para)
         timer_group_set_alarm_value_in_isr(TIMER_GROUP_0, timer_idx, timer_counter_value);
     }
 
+	multiplexTimer_callback( NULL );
+
     /* After the alarm has been triggered
       we need enable it again, so it is triggered the next time */
     timer_group_enable_alarm_in_isr(TIMER_GROUP_0, timer_idx);
+}
+
+static void multiplexTask_workerFunction(void *p)
+{
+	while(1)
+	{
+		multiplexTimer_callback( NULL );
+		vTaskDelay(pdMS_TO_TICKS(1));
+	}
 }
 
 
 void start7SegMultiplex( uint64_t period_us )
 {
 	_initializeMultiplexPins();
+#if 0
+    xTaskCreate(multiplexTask_workerFunction, "multiplextask", 8192, NULL, tskIDLE_PRIORITY + 5, NULL);
+#else
+
 
 #if 0
 	///////////////////////////////////////////////////////////////////////////
@@ -406,7 +421,7 @@ void start7SegMultiplex( uint64_t period_us )
     timer_enable_intr(TIMER_GROUP_0, TIMER_0);
     timer_isr_register(TIMER_GROUP_0, TIMER_0, timer_group0_isr, (void *) TIMER_0, ESP_INTR_FLAG_IRAM, NULL);
     timer_start(TIMER_GROUP_0, TIMER_0);
-#endif
+#else
 
     ///////////////////////////////////////////////////////////////////////////
 	const esp_timer_create_args_t multiplex_timer_args = {
@@ -420,4 +435,6 @@ void start7SegMultiplex( uint64_t period_us )
 
     /* Start the timer */
     ESP_ERROR_CHECK(esp_timer_start_periodic(multiplex_timer, period_us)); // [us]
+#endif
+#endif
 }
