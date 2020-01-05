@@ -123,6 +123,7 @@ static void clockTask_workerFunction(void *p)
 
 				// show it on 7-seg display
 				strftime(strftime_buf, sizeof(strftime_buf), "%X", &timeinfo);
+				if ( strftime_buf[0] == '0' ) strftime_buf[0] = ' ';
 				strftime_buf[5] = '\0';
 				if ( ! _doWeHaveAnIPAddr() )
 				{

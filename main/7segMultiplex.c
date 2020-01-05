@@ -137,6 +137,9 @@ static void _setSegments( char c, uint8_t *pDigitSegments )
 		case '9':
 			*pDigitSegments = SEG_A_MASK | SEG_B_MASK | SEG_C_MASK | SEG_D_MASK |     0      | SEG_F_MASK | SEG_G_MASK;
 			break;
+		case ' ':
+			*pDigitSegments =     0      |     0      |     0      |     0      |     0      |     0      |     0     ;
+			break;
 		default:
 			*pDigitSegments =     0      |     0      |     0      | SEG_D_MASK |     0      |     0      |     0     ;
 			break;
