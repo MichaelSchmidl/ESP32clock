@@ -393,6 +393,9 @@ void notificationTaskStart(int prio)
     }
     vQueueAddToRegistry( hNotifyControlQueue, "NOTIFYctrl" );
     
-    xTaskCreate(&notification_task, "notification_task", 16000, NULL, prio, NULL);
+    if ( pdPASS != xTaskCreatePinnedToCore(&notification_task, "notification_task", 16000, NULL, prio, NULL, 1) )
+    {
+    	ESP_LOGE( __func__, "xTaskCreate failed");
+    }
 }
 
