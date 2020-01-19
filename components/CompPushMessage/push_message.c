@@ -385,7 +385,7 @@ void notificationTask_sendMessage( uint8_t message )
 
 void notificationTaskStart(int prio)
 {
-    hNotifyControlQueue = xQueueCreate( 5, sizeof ( uint8_t ) );
+    hNotifyControlQueue = xQueueCreate( 50, sizeof ( uint8_t ) );
     if ( NULL == hNotifyControlQueue )
     {
         ESP_LOGE(__func__, "hNotifyControlQueue create failed");
@@ -393,7 +393,7 @@ void notificationTaskStart(int prio)
     }
     vQueueAddToRegistry( hNotifyControlQueue, "NOTIFYctrl" );
     
-    if ( pdPASS != xTaskCreatePinnedToCore(&notification_task, "notification_task", 16000, NULL, prio, NULL, 1) )
+    if ( pdPASS != xTaskCreate(&notification_task, "notification_task", 16000, NULL, prio, NULL) )
     {
     	ESP_LOGE( __func__, "xTaskCreate failed");
     }

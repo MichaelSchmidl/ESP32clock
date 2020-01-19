@@ -154,7 +154,7 @@ void healthCheckTrigger( void )
 
 void healthchecksTaskStart(int prio)
 {
-    hHealthCheckControlQueue = xQueueCreate( 5, sizeof ( uint8_t ) );
+    hHealthCheckControlQueue = xQueueCreate( 50, sizeof ( uint8_t ) );
     if ( NULL == hHealthCheckControlQueue )
     {
         ESP_LOGE(__func__, "hHealthCheckControlQueue create failed");

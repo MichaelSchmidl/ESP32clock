@@ -220,7 +220,7 @@ static void _createTask( void )
     		     "diag_task",
 				 4096, // stack size
 				 NULL,
-				 (configMAX_PRIORITIES / 2) - 1, // below normal
+				 PRIORITY_LOWER, // below normal
 				 NULL);
 }
 

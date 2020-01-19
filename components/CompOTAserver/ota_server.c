@@ -95,7 +95,15 @@ static esp_err_t create_tcp_server()
 
 void ota_server_task(void *param)
 {
-    vTaskDelay(pdMS_TO_TICKS( 15 * 1000UL )); // wait for TCPIP up and running before creating the OTA task
+	// wait for TCPIP up and running before creating the OTA task
+    tcpip_adapter_ip_info_t ipInfo;
+	do
+	{
+	    vTaskDelay(pdMS_TO_TICKS( 1000UL ));
+	    tcpip_adapter_get_ip_info(TCPIP_ADAPTER_IF_STA, &ipInfo);
+	}
+    while ( 0 == ipInfo.ip.addr );
+
 
     ESP_ERROR_CHECK( create_tcp_server() );
 	

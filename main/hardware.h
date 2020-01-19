@@ -3,8 +3,8 @@
 
 #include <driver/gpio.h>
 
-#define LEDC_PWM_FREQ                    (200UL * 1000UL)
-#define MULTIPLEX_RATE_US                (1000)
+#define LEDC_PWM_FREQ                    (234UL * 1000UL)
+#define MULTIPLEX_RATE_US                (1234)
 
 #ifdef USE_M5_TFT
 	#define M5_LCD_BL                    GPIO_NUM_32
@@ -60,5 +60,10 @@
 #define SEGMENT_ON                   1
 #define SEGMENT_OFF                  0
 
+#define PRIORITY_NORMAL       ( configMAX_PRIORITIES / 2 )
+#define PRIORITY_LOWER        ( PRIORITY_NORMAL - 1 )
+#define PRIORITY_HIGHER       ( PRIORITY_NORMAL + 1 )
+#define PRIORITY_EVEN_LOWER   ( PRIORITY_LOWER - 1 )
+#define PRIORITY_EVEN_HIGHER  ( PRIORITY_HIGHER + 1 )
 
 #endif /*__HARDWARE_H__*/
