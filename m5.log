@@ -1,0 +1,198 @@
+ets Jun  8 2016 00:22:57
+
+rst:0x1 (POWERON_RESET),boot:0x17 (SPI_FAST_FLASH_BOOT)
+configsip: 0, SPIWP:0xee
+clk_drv:0x00,q_drv:0x00,d_drv:0x00,cs0_drv:0x00,hd_drv:0x00,wp_drv:0x00
+mode:DIO, clock div:2
+load:0x3fff0018,len:4
+load:0x3fff001c,len:7148
+load:0x40078000,len:14740
+load:0x40080400,len:4292
+entry 0x400806bc
+I (71) boot: Chip Revision: 1
+I (72) boot_comm: chip revision: 1, min. bootloader chip revision: 0
+I (39) boot: ESP-IDF v4.1-dev-997-gd57890cdf-dirty 2nd stage bootloader
+I (39) boot: compile time 22:02:19
+I (40) boot: Enabling RNG early entropy source...
+I (45) boot: SPI Speed      : 40MHz
+I (49) boot: SPI Mode       : DIO
+I (53) boot: SPI Flash Size : 4MB
+I (58) boot: Partition Table:
+I (61) boot: ## Label            Usage          Type ST Offset   Length
+I (68) boot:  0 nvs              WiFi data        01 02 00009000 00004000
+I (76) boot:  1 otadata          OTA data         01 00 0000d000 00002000
+I (83) boot:  2 phy_init         RF data          01 01 0000f000 00001000
+I (91) boot:  3 factory          factory app      00 00 00010000 00100000
+I (98) boot:  4 ota_0            OTA app          00 10 00110000 00100000
+I (106) boot:  5 ota_1            OTA app          00 11 00210000 00100000
+I (113) boot: End of partition table
+I (118) boot: Defaulting to factory image
+I (122) boot_comm: chip revision: 1, min. application chip revision: 0
+I (129) esp_image: segment 0: paddr=0x00010020 vaddr=0x3f400020 size=0x22e5c (142940) map
+I (190) esp_image: segment 1: paddr=0x00032e84 vaddr=0x3ffbdb60 size=0x05d38 ( 23864) load
+I (199) esp_image: segment 2: paddr=0x00038bc4 vaddr=0x40080000 size=0x00400 (  1024) load
+I (200) esp_image: segment 3: paddr=0x00038fcc vaddr=0x40080400 size=0x0704c ( 28748) load
+I (220) esp_image: segment 4: paddr=0x00040020 vaddr=0x400d0020 size=0x9ac4c (633932) map
+I (447) esp_image: segment 5: paddr=0x000dac74 vaddr=0x4008744c size=0x0b224 ( 45604) load
+I (478) boot: Loaded app from partition at offset 0x10000
+I (478) boot: Disabling RNG early entropy source...
+I (479) cpu_start: Pro cpu up.
+I (482) cpu_start: Application information:
+I (487) cpu_start: Project name:     ESP32clock
+I (492) cpu_start: App version:      2dd11f2-dirty
+I (498) cpu_start: Compile time:     Jan 20 2020 22:02:26
+I (504) cpu_start: ELF file SHA256:  813a53adfdb7c647...
+I (510) cpu_start: ESP-IDF:          v4.1-dev-997-gd57890cdf-dirty
+I (517) cpu_start: Single core mode
+I (521) heap_init: Initializing. RAM available for dynamic allocation:
+I (528) heap_init: At 3FFAE6E0 len 0000F480 (61 KiB): DRAM
+I (534) heap_init: At 3FFC9BF0 len 00016410 (89 KiB): DRAM
+I (540) heap_init: At 3FFE0440 len 0001FBC0 (126 KiB): D/IRAM
+I (547) heap_init: At 40078000 len 00008000 (32 KiB): IRAM
+I (553) heap_init: At 40092670 len 0000D990 (54 KiB): IRAM
+I (559) cpu_start: Pro cpu start user code
+I (577) spi_flash: detected chip: generic
+I (578) spi_flash: flash io: dio
+I (578) cpu_start: Starting scheduler on PRO CPU.
+
+==============================
+TFT display, LoBo 11/2017
+==============================
+Pins used: miso=19, mosi=23, sck=18, cs=14
+==============================
+
+SPI: display device added to spi bus (1)
+SPI: attached display device, speed=8000000
+SPI: bus uses native pins: false
+SPI: display init...
+OK
+SPI: Max rd speed = 1000000
+SPI: Changed speed to 26666666
+DisplayController: ILI9341
+I (3530) diagTask: DiagTask_init done
+I (3530) diagTask: DiagTask_connect done
+I (3550) notification_task: Seeding the random number generator
+I (3550) notification_task: Loading the CA root certificate...
+I (3550) notification_task: Setting hostname for TLS session...
+I (3560) wifi: wifi driver task: 3ffb9a98, prio:23, stack:3584, core=0
+I (3560) system_api: Base MAC address is not set, read default base MAC address from BLK0 of EFUSE
+I (3570) system_api: Base MAC address is not set, read default base MAC address from BLK0 of EFUSE
+I (3590) wifi: wifi firmware version: 1afe085
+I (3590) wifi: config NVS flash: enabled
+I (3590) wifi: config nano formating: disabled
+I (3590) wifi: Init dynamic tx buffer num: 32
+I (3600) wifi: Init data frame dynamic rx buffer num: 32
+I (3600) wifi: Init management frame dynamic rx buffer num: 32
+I (3610) wifi: Init management short buffer num: 32
+I (3610) wifi: Init static rx buffer size: 1600
+I (3620) wifi: Init static rx buffer num: 10
+I (3620) wifi: Init dynamic rx buffer num: 32
+I (3630) example_connect: Connecting to SysOC...
+I (3720) phy: phy_version: 4102, 2fa7a43, Jul 15 2019, 13:06:06, 0, 0
+I (3720) wifi: mode : sta (a4:cf:12:76:52:d8)
+I (3720) notification_task: Setting up the SSL/TLS structure...
+I (3720) notification_task: wait for a message to send
+I (3840) wifi: new:<1,0>, old:<1,0>, ap:<255,255>, sta:<1,0>, prof:1
+I (4230) wifi: state: init -> auth (b0)
+I (4240) wifi: state: auth -> assoc (0)
+I (4250) wifi: state: assoc -> run (10)
+I (4260) wifi: connected with SysOC, aid = 3, channel 1, BW20, bssid = 28:cf:e9:88:57:2c, security type: 3, phy: bgn, rssi: -57
+I (4260) wifi: pm start, type: 1
+
+I (4310) wifi: AP's beacon interval = 102400 us, DTIM period = 3
+I (6040) tcpip_adapter: sta ip: 192.168.0.161, mask: 255.255.255.0, gw: 192.168.0.1
+I (6040) example_connect: Connected to SysOC
+I (6040) example_connect: IPv4 address: 192.168.0.161
+I (6050) example_connect: IPv6 address: fe80:0000:0000:0000:a6cf:12ff:fe76:52d8
+I (6050) initialize_sntp: Initializing SNTP
+I (6060) multiplex_setTime: [no AP]
+I (6730) create_tcp_server: server socket....port=8032
+I (7890) time_sync_notification_cb: Notification of a time synchronization event
+  year  : 2020 
+  month : 1 
+  day   : 20 
+
+Days since Y2K :  7324 
+Latitude :  48.1, longitude: 11.6, timezone: 1.0 
+Declination   :  -20.17 
+Daylength     : 8:55 hours 
+
+Civil twilight: 7:30
+Sunrise       : 7:56
+Sun altitude  21.69 degr South at noontime 12:24
+Sunset        : 16:52
+Civil twilight: 17:19
+
+I (7920) multiplex_setTime: [22:06]
+I (7920) notification_task: got new message to send
+I (7930) notification_task: Connecting to api.pushover.net:443...
+I (8510) notification_task: Connected.
+I (8510) notification_task: Performing the SSL/TLS handshake...
+I (10050) notification_task: Verifying peer X.509 certificate...
+W (10050) notification_task: Failed to verify peer certificate!
+W (10050) notification_task: verification info:   ! The certificate is not correctly signed by the trusted CA
+
+I (10060) notification_task: creating message text...
+I (10070) notification_task: replace blanks with plus sign...
+I (10080) notification_task: Writing HTTP request POST https://api.pushover.net/1/messages.json HTTP/1.0
+Host: api.pushover.net
+Content-Type: application/x-www-form-urlencoded
+Content-Length: 151
+
+token=abn493y7ofogu2m7mi4suckmtzmvq7&user=uih41aopihno8aqb1d5nifjm8x44bb&title=ESP32clock+started&message=Firmware+Jan+20+2020+22:02:25+started+@+22:06...
+I (10120) notification_task: 303 bytes written
+I (10120) notification_task: Reading HTTP response...
+I (10670) notification_task: 511 bytes read
+I (10670) notification_task: 358 bytes read
+I (10670) notification_task: connection closed
+I (10680) notification_task: wait until next notification is due...
+I (10680) notification_task: wait for a message to send
+I (10680) notification_task: got new message to send
+I (10690) notification_task: Connecting to api.pushover.net:443...
+I (10970) notification_task: Connected.
+I (10970) notification_task: Performing the SSL/TLS handshake...
+I (12510) notification_task: Verifying peer X.509 certificate...
+W (12510) notification_task: Failed to verify peer certificate!
+W (12510) notification_task: verification info:   ! The certificate is not correctly signed by the trusted CA
+
+I (12520) notification_task: creating message text...
+I (12530) notification_task: replace blanks with plus sign...
+I (12530) notification_task: Writing HTTP request POST https://api.pushover.net/1/messages.json HTTP/1.0
+Host: api.pushover.net
+Content-Type: application/x-www-form-urlencoded
+Content-Length: 161
+
+token=abn493y7ofogu2m7mi4suckmtzmvq7&user=uih41aopihno8aqb1d5nifjm8x44bb&title=ESP32clock+dimmed&message=m5clock+(192.168.0.161)+[22:06],+159348+free,+up+0:00:03...
+I (12570) notification_task: 313 bytes written
+I (12570) notification_task: Reading HTTP response...
+I (13140) notification_task: 511 bytes read
+I (13140) notification_task: 358 bytes read
+I (13140) notification_task: connection closed
+I (13150) notification_task: wait until next notification is due...
+I (13150) notification_task: wait for a message to send
+I (13730) healthcheck_task: waiting for trigger
+I (13730) healthcheck_task: got new trigger
+I (13740) healthcheck_task: DNS lookup succeeded. IP=178.63.26.145
+I (13740) healthcheck_task: ... allocated socket
+I (13780) healthcheck_task: ... connected
+I (13780) healthcheck_task: ... socket send success
+I (13780) healthcheck_task: ... set socket receiving timeout success
+I (13820) healthcheck_task: ... done reading from socket. Last read return=0 errno=128
+
+I (13830) healthcheck_task: waiting for trigger
+  year  : 2020 
+  month : 1 
+  day   : 20 
+
+Days since Y2K :  7324 
+Latitude :  48.1, longitude: 11.6, timezone: 1.0 
+Declination   :  -20.17 
+Daylength     : 8:55 hours 
+
+Civil twilight: 7:30
+Sunrise       : 7:56
+Sun altitude  21.69 degr South at noontime 12:24
+Sunset        : 16:52
+Civil twilight: 17:19
+
+I (63340) multiplex_setTime: [22:07]

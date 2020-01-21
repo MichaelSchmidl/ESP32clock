@@ -6,6 +6,8 @@
 #define LEDC_PWM_FREQ                    (234UL * 1000UL)
 #define MULTIPLEX_RATE_US                (1234)
 
+#undef USE_M5_TFT
+
 #ifdef USE_M5_TFT
 	#define M5_LCD_BL                    GPIO_NUM_32
 	#define M5_LCD_RST                   GPIO_NUM_33

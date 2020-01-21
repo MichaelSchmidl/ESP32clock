@@ -36,12 +36,17 @@
 #include "lwip/dns.h"
 
 #include "push_message.h"
+#include "hardware.h"
 
 #define DELAY_AFTER_ERROR ((30* 1000) / portTICK_PERIOD_MS)
 
 #define WEB_SERVER "hc-ping.com"
 #define WEB_PORT   "80"
+#ifdef USE_M5_TFT
+#define WEB_URL    "http://hc-ping.com/58c71379-19ce-47c7-97b9-0db58e4303df"
+#else
 #define WEB_URL    "http://hc-ping.com/5a4bbed5-162e-49e9-9c33-cd901a80a690"
+#endif
 
 static const char REQUEST[] = "GET " WEB_URL " HTTP/1.0\r\n"
 "Host: "WEB_SERVER"\r\n"
