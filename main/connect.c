@@ -22,7 +22,6 @@
 #include "freertos/event_groups.h"
 #include "lwip/err.h"
 #include "lwip/sys.h"
-#include "hardware.h"
 
 #define GOT_IPV4_BIT BIT(0)
 #define GOT_IPV6_BIT BIT(1)
@@ -119,6 +118,7 @@ static void on_wifi_connect(void *arg, esp_event_base_t event_base,
                             int32_t event_id, void *event_data)
 {
     tcpip_adapter_create_ip6_linklocal(TCPIP_ADAPTER_IF_STA);
+    tcpip_adapter_set_hostname(TCPIP_ADAPTER_IF_STA ,"esp32clock");
 }
 
 #endif // CONFIG_EXAMPLE_CONNECT_IPV6
@@ -146,11 +146,6 @@ static void start(void)
     ESP_ERROR_CHECK(esp_wifi_set_mode(WIFI_MODE_STA));
     ESP_ERROR_CHECK(esp_wifi_set_config(ESP_IF_WIFI_STA, &wifi_config));
     ESP_ERROR_CHECK(esp_wifi_start());
-#ifdef USE_M5_TFT
-    ESP_ERROR_CHECK(tcpip_adapter_set_hostname(TCPIP_ADAPTER_IF_STA ,"m5clock"));
-#else
-    ESP_ERROR_CHECK(tcpip_adapter_set_hostname(TCPIP_ADAPTER_IF_STA ,"esp32clock"));
-#endif
     ESP_ERROR_CHECK(esp_wifi_connect());
     s_connection_name = CONFIG_EXAMPLE_WIFI_SSID;
 }

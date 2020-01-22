@@ -150,7 +150,7 @@ int isSunDown( double latit, double longit, struct tm timeinfo )
 	if (riset > 24.0) riset-= 24.0;
 	if (settm > 24.0) settm-= 24.0;
 
-#if 1
+#if 0
 	printf("  year  : %d \n",(int)y);
 	printf("  month : %d \n",(int)m);
 	printf("  day   : %d \n\n",(int)day);

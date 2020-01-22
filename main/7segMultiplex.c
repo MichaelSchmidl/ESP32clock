@@ -117,7 +117,7 @@ static void _setSegments( char c, uint8_t *pDigitSegments )
 }
 
 
-static void inline _stopDrivingLeds( void )
+static void IRAM_ATTR inline _stopDrivingLeds( void )
 {
 	gpio_set_level(     DIGIT_H10, DIGIT_INACTIVE );
     gpio_set_level(     DIGIT_H1,  DIGIT_INACTIVE );
@@ -125,7 +125,7 @@ static void inline _stopDrivingLeds( void )
     gpio_set_level(     DIGIT_M1,  DIGIT_INACTIVE );
 }
 
-static void inline _setSegmentPins( uint8_t bitMask )
+static void inline IRAM_ATTR _setSegmentPins( uint8_t bitMask )
 {
     gpio_set_level( SEG_A, bitMask & SEG_A_MASK ? SEGMENT_ON : SEGMENT_OFF );
     gpio_set_level( SEG_B, bitMask & SEG_B_MASK ? SEGMENT_ON : SEGMENT_OFF );
@@ -137,7 +137,7 @@ static void inline _setSegmentPins( uint8_t bitMask )
 }
 
 
-static void multiplexTimer_callback(void* arg)
+static void IRAM_ATTR multiplexTimer_callback(void* arg)
 {
 	static uint8_t multiplexCounter = 0;
     gpio_set_level( DBG_PIN, 1 );
