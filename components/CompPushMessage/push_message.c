@@ -56,8 +56,13 @@
 #define WEB_SERVER "api.pushover.net"
 #define WEB_PORT   "443"
 #define WEB_URL    "https://api.pushover.net/1/messages.json"
-#define PUSH_TOKEN "abn493y7ofogu2m7mi4suckmtzmvq7"
-#define PUSH_USER  "uih41aopihno8aqb1d5nifjm8x44bb"
+#include "pushover_credentials.h" // define PUSH_TOKEN and PUSH_USER
+#ifndef PUSH_TOKEN
+   #define PUSH_TOKEN "yourPushToken"
+#endif
+#ifndef PUSH_USER
+   #define PUSH_USER  "yourPushUser"
+#endif
 
 static const char REQUEST_HEADER[] = "POST " WEB_URL " HTTP/1.0\r\n"
 "Host: "WEB_SERVER"\r\n"

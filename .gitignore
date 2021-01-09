@@ -1,2 +1,4 @@
 build/
 sdkconfig.old
+healthchchecks_credentials.h
+pushover_credentials.h
